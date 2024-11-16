@@ -166,3 +166,19 @@ func listTasks(scanner *bufio.Scanner) {
 		fmt.Println("No tasks found.")
 	}
 }
+
+// saveTasksToFile saves the current task list to a JSON file.
+func saveTasksToFile(filename string) {
+	file, err := os.Create(filename) // Open the file for writing (truncate if exists)
+	if err != nil {
+		fmt.Println("Error saving tasks:", err)
+		return
+	}
+	defer file.Close() // Ensure the file is closed after writing
+
+	encoder := json.NewEncoder(file) // Create a JSON encoder
+	err = encoder.Encode(taskList)   // Write the task list to the file
+	if err != nil {
+		fmt.Println("Error encoding tasks:", err)
+	}
+}
