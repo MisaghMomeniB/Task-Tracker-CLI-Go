@@ -137,3 +137,32 @@ func updateTaskStatus(scanner *bufio.Scanner) {
 	// If the task ID was not found, notify the user
 	fmt.Println("Error: Task not found.")
 }
+
+// listTasks displays tasks filtered by their status.
+func listTasks(scanner *bufio.Scanner) {
+	fmt.Print("Enter status to filter by (todo, in-progress, done, all): ")
+	scanner.Scan()
+	status := strings.TrimSpace(scanner.Text()) // Read and clean up the status input
+
+	// Validate that the status filter is valid
+	if status != "todo" && status != "in-progress" && status != "done" && status != "all" {
+		fmt.Println("Error: Invalid status filter.")
+		return
+	}
+
+	// Display tasks that match the filter
+	fmt.Println("\nTasks:")
+	count := 0
+	for _, task := range taskList.Tasks {
+		// Include tasks that match the filter or show all
+		if status == "all" || task.Status == status {
+			fmt.Printf("ID: %d | Title: %s | Status: %s\n", task.ID, task.Title, task.Status)
+			count++
+		}
+	}
+
+	// Notify if no tasks are found
+	if count == 0 {
+		fmt.Println("No tasks found.")
+	}
+}
