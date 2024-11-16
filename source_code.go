@@ -74,3 +74,30 @@ func displayMenu() {
 	fmt.Println("4. Exit")               // Option to exit the program
 	fmt.Print("Choose an option: ")      // Prompt the user to choose
 }
+
+// addTask allows the user to add a new task to the list.
+func addTask(scanner *bufio.Scanner) {
+	fmt.Print("Enter task title: ") // Ask the user for a task title
+	scanner.Scan()
+	title := strings.TrimSpace(scanner.Text()) // Read and clean up the title
+
+	// Validate that the title is not empty
+	if title == "" {
+		fmt.Println("Error: Task title cannot be empty.")
+		return
+	}
+
+	// Create a new task with a unique ID
+	newTask := Task{
+		ID:     taskList.NextID, // Assign the next available ID
+		Title:  title,           // Set the title provided by the user
+		Status: "todo",          // Default status for new tasks
+	}
+
+	// Add the new task to the list and increment the next ID
+	taskList.Tasks = append(taskList.Tasks, newTask)
+	taskList.NextID++
+
+	// Confirm the task has been added
+	fmt.Printf("Task '%s' added with ID %d.\n", title, newTask.ID)
+}
