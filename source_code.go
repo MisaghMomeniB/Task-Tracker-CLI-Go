@@ -16,3 +16,9 @@ type Task struct {
 	Title string `json:"title"` // Description/title of the task
 	Status string `json:"status"` // Status of the task: "todo", "in-progress", or "done"
 }
+
+// TaskList manages a slice of Task and the next ID.
+type TaskList struct {
+	Tasks  []Task `json:"tasks"`   // List of tasks
+	NextID int    `json:"next_id"` // Next ID to ensure task IDs are unique
+}
