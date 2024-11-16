@@ -182,3 +182,24 @@ func saveTasksToFile(filename string) {
 		fmt.Println("Error encoding tasks:", err)
 	}
 }
+
+// loadTasksFromFile loads tasks from a JSON file into memory.
+func loadTasksFromFile(filename string) error {
+	file, err := os.Open(filename) // Open the file for reading
+	if os.IsNotExist(err) {
+		// If the file does not exist, initialize an empty task list
+		taskList = TaskList{NextID: 1}
+		return nil
+	} else if err != nil {
+		return err // Return other errors
+	}
+	defer file.Close() // Ensure the file is closed after reading
+
+	decoder := json.NewDecoder(file)      // Create a JSON decoder
+	err = decoder.Decode(&taskList)       // Populate the task list from the file
+	if err != nil {
+		taskList = TaskList{NextID: 1}     // Reset the task list if decoding fails
+		return err
+	}
+	return nil
+}
