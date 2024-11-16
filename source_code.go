@@ -203,3 +203,8 @@ func loadTasksFromFile(filename string) error {
 	}
 	return nil
 }
+
+// isValidStatus checks if the given status is valid.
+func isValidStatus(status string) bool {
+	return status == "todo" || status == "in-progress" || status == "done"
+}
