@@ -64,3 +64,13 @@ func main() {
 		}
 	}
 }
+
+// displayMenu shows the CLI options to the user.
+func displayMenu() {
+	fmt.Println("\nTask Tracker CLI")
+	fmt.Println("1. Add Task")       // Option to add a new task
+	fmt.Println("2. Update Task Status") // Option to change the status of a task
+	fmt.Println("3. List Tasks")         // Option to view tasks
+	fmt.Println("4. Exit")               // Option to exit the program
+	fmt.Print("Choose an option: ")      // Prompt the user to choose
+}
