@@ -101,3 +101,39 @@ func addTask(scanner *bufio.Scanner) {
 	// Confirm the task has been added
 	fmt.Printf("Task '%s' added with ID %d.\n", title, newTask.ID)
 }
+
+// updateTaskStatus allows the user to change the status of an existing task.
+func updateTaskStatus(scanner *bufio.Scanner) {
+	fmt.Print("Enter task ID to update: ") // Ask for the task ID
+	scanner.Scan()
+	idStr := strings.TrimSpace(scanner.Text()) // Read and clean up the ID input
+	id, err := strconv.Atoi(idStr)            // Convert the ID to an integer
+	if err != nil {
+		fmt.Println("Error: Invalid task ID.") // Handle invalid input
+		return
+	}
+
+	// Search for the task by ID
+	for i, task := range taskList.Tasks {
+		if task.ID == id {
+			// If task is found, ask for the new status
+			fmt.Print("Enter new status (todo, in-progress, done): ")
+			scanner.Scan()
+			status := strings.TrimSpace(scanner.Text()) // Read and clean up the status
+
+			// Validate that the status is valid
+			if !isValidStatus(status) {
+				fmt.Println("Error: Invalid status. Valid statuses are: todo, in-progress, done.")
+				return
+			}
+
+			// Update the task's status
+			taskList.Tasks[i].Status = status
+			fmt.Printf("Task ID %d updated to status '%s'.\n", id, status)
+			return
+		}
+	}
+
+	// If the task ID was not found, notify the user
+	fmt.Println("Error: Task not found.")
+}
