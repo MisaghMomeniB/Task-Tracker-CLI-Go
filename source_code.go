@@ -2,18 +2,18 @@
 package main
 
 import (
-	"bufio"       // Provides buffered I/O for reading user input
+	"bufio"         // Provides buffered I/O for reading user input
 	"encoding/json" // Enables JSON encoding/decoding for file operations
-	"fmt"          // Provides functions for formatted I/O
-	"os"           // Provides functions to interact with the file system
-	"strconv"      // Provides functions to convert strings to integers and vice versa
-	"strings"      // Provides string manipulation functions
+	"fmt"           // Provides functions for formatted I/O
+	"os"            // Provides functions to interact with the file system
+	"strconv"       // Provides functions to convert strings to integers and vice versa
+	"strings"       // Provides string manipulation functions
 )
 
 // Task represents a single task in the tracker.
 type Task struct {
-	ID int `json:"id"` // Unique identifier for the task
-	Title string `json:"title"` // Description/title of the task
+	ID     int    `json:"id"`     // Unique identifier for the task
+	Title  string `json:"title"`  // Description/title of the task
 	Status string `json:"status"` // Status of the task: "todo", "in-progress", or "done"
 }
 
@@ -68,7 +68,7 @@ func main() {
 // displayMenu shows the CLI options to the user.
 func displayMenu() {
 	fmt.Println("\nTask Tracker CLI")
-	fmt.Println("1. Add Task")       // Option to add a new task
+	fmt.Println("1. Add Task")           // Option to add a new task
 	fmt.Println("2. Update Task Status") // Option to change the status of a task
 	fmt.Println("3. List Tasks")         // Option to view tasks
 	fmt.Println("4. Exit")               // Option to exit the program
@@ -107,7 +107,7 @@ func updateTaskStatus(scanner *bufio.Scanner) {
 	fmt.Print("Enter task ID to update: ") // Ask for the task ID
 	scanner.Scan()
 	idStr := strings.TrimSpace(scanner.Text()) // Read and clean up the ID input
-	id, err := strconv.Atoi(idStr)            // Convert the ID to an integer
+	id, err := strconv.Atoi(idStr)             // Convert the ID to an integer
 	if err != nil {
 		fmt.Println("Error: Invalid task ID.") // Handle invalid input
 		return
@@ -195,10 +195,10 @@ func loadTasksFromFile(filename string) error {
 	}
 	defer file.Close() // Ensure the file is closed after reading
 
-	decoder := json.NewDecoder(file)      // Create a JSON decoder
-	err = decoder.Decode(&taskList)       // Populate the task list from the file
+	decoder := json.NewDecoder(file) // Create a JSON decoder
+	err = decoder.Decode(&taskList)  // Populate the task list from the file
 	if err != nil {
-		taskList = TaskList{NextID: 1}     // Reset the task list if decoding fails
+		taskList = TaskList{NextID: 1} // Reset the task list if decoding fails
 		return err
 	}
 	return nil
