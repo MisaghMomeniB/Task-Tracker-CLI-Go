@@ -23,18 +23,18 @@ type TaskList struct {
 	NextID int    `json:"next_id"` // Next ID to ensure task IDs are unique
 }
 
-// Global task list to store all tasks and manage IDs
-var taskList TaskList
+var taskList TaskList // Global task list to store all tasks and manage IDs
+var filePath = "tasks.json" // Global task path file
 
 func main() {
 	// Load tasks from file at the start of the program
-	if err := loadTasksFromFile("tasks.json"); err != nil {
+	if err := loadTasksFromFile(filePath); err != nil {
 		// If there's an error loading the file, print a warning
 		fmt.Println("Warning: Could not load tasks:", err)
 	}
 
 	// Ensure tasks are saved to the file when the program exits
-	defer saveTasksToFile("tasks.json")
+	defer saveTasksToFile(filePath)
 
 	// Scanner to read user input from the terminal
 	scanner := bufio.NewScanner(os.Stdin)
