@@ -1,210 +1,286 @@
-// File: source_code.go
+// File: enhanced_task_tracker.go
 package main
 
 import (
-	"bufio"         // Provides buffered I/O for reading user input
-	"encoding/json" // Enables JSON encoding/decoding for file operations
-	"fmt"           // Provides functions for formatted I/O
-	"os"            // Provides functions to interact with the file system
-	"strconv"       // Provides functions to convert strings to integers and vice versa
-	"strings"       // Provides string manipulation functions
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
 )
 
 // Task represents a single task in the tracker.
 type Task struct {
-	ID     int    `json:"id"`     // Unique identifier for the task
-	Title  string `json:"title"`  // Description/title of the task
-	Status string `json:"status"` // Status of the task: "todo", "in-progress", or "done"
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+	Status   string `json:"status"`
+	Priority string `json:"priority"` // New priority field
 }
 
 // TaskList manages a slice of Task and the next ID.
 type TaskList struct {
-	Tasks  []Task `json:"tasks"`   // List of tasks
-	NextID int    `json:"next_id"` // Next ID to ensure task IDs are unique
+	Tasks  []Task `json:"tasks"`
+	NextID int    `json:"next_id"`
 }
 
-var taskList TaskList // Global task list to store all tasks and manage IDs
-var filePath = "tasks.json" // Global task path file
+var taskList TaskList
+var filePath = "tasks.json"
 
 func main() {
-	// Load tasks from file at the start of the program
 	if err := loadTasksFromFile(filePath); err != nil {
-		// If there's an error loading the file, print a warning
 		fmt.Println("Warning: Could not load tasks:", err)
 	}
-
-	// Ensure tasks are saved to the file when the program exits
 	defer saveTasksToFile(filePath)
 
-	// Scanner to read user input from the terminal
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Main loop to display the menu and process user commands
 	for {
-		displayMenu() // Show the CLI menu to the user
-
-		// Read the user's choice
+		displayMenu()
 		scanner.Scan()
-		choice := strings.TrimSpace(scanner.Text()) // Clean up whitespace
+		choice := strings.TrimSpace(scanner.Text())
 
-		// Handle the user's choice
 		switch choice {
 		case "1":
-			addTask(scanner) // Add a new task
+			addTask(scanner)
 		case "2":
-			updateTaskStatus(scanner) // Update the status of an existing task
+			updateTaskStatus(scanner)
 		case "3":
-			listTasks(scanner) // List tasks based on status
+			listTasks(scanner)
 		case "4":
+			deleteTask(scanner)
+		case "5":
+			searchTasks(scanner)
+		case "6":
+			sortTasksMenu(scanner)
+		case "7":
 			fmt.Println("Exiting... Goodbye!")
-			return // Exit the program
+			return
 		default:
-			// Handle invalid choices
 			fmt.Println("Invalid choice. Please select a valid option.")
 		}
 	}
 }
 
-// displayMenu shows the CLI options to the user.
 func displayMenu() {
-	fmt.Println("\nTask Tracker CLI")
-	fmt.Println("1. Add Task")           // Option to add a new task
-	fmt.Println("2. Update Task Status") // Option to change the status of a task
-	fmt.Println("3. List Tasks")         // Option to view tasks
-	fmt.Println("4. Exit")               // Option to exit the program
-	fmt.Print("Choose an option: ")      // Prompt the user to choose
+	fmt.Println("\nEnhanced Task Tracker CLI")
+	fmt.Println("1. Add Task")
+	fmt.Println("2. Update Task Status")
+	fmt.Println("3. List Tasks")
+	fmt.Println("4. Delete Task")
+	fmt.Println("5. Search Tasks")
+	fmt.Println("6. Sort Tasks")
+	fmt.Println("7. Exit")
+	fmt.Print("Choose an option: ")
 }
 
-// addTask allows the user to add a new task to the list.
 func addTask(scanner *bufio.Scanner) {
-	fmt.Print("Enter task title: ") // Ask the user for a task title
+	fmt.Print("Enter task title: ")
 	scanner.Scan()
-	title := strings.TrimSpace(scanner.Text()) // Read and clean up the title
-
-	// Validate that the title is not empty
+	title := strings.TrimSpace(scanner.Text())
 	if title == "" {
 		fmt.Println("Error: Task title cannot be empty.")
 		return
 	}
 
-	// Create a new task with a unique ID
-	newTask := Task{
-		ID:     taskList.NextID, // Assign the next available ID
-		Title:  title,           // Set the title provided by the user
-		Status: "todo",          // Default status for new tasks
-	}
-
-	// Add the new task to the list and increment the next ID
-	taskList.Tasks = append(taskList.Tasks, newTask)
-	taskList.NextID++
-
-	// Confirm the task has been added
-	fmt.Printf("Task '%s' added with ID %d.\n", title, newTask.ID)
-}
-
-// updateTaskStatus allows the user to change the status of an existing task.
-func updateTaskStatus(scanner *bufio.Scanner) {
-	fmt.Print("Enter task ID to update: ") // Ask for the task ID
+	fmt.Print("Enter priority (High, Medium, Low): ")
 	scanner.Scan()
-	idStr := strings.TrimSpace(scanner.Text()) // Read and clean up the ID input
-	id, err := strconv.Atoi(idStr)             // Convert the ID to an integer
-	if err != nil {
-		fmt.Println("Error: Invalid task ID.") // Handle invalid input
+	priority := strings.TrimSpace(scanner.Text())
+	if priority != "High" && priority != "Medium" && priority != "Low" {
+		fmt.Println("Error: Invalid priority.")
 		return
 	}
 
-	// Search for the task by ID
+	newTask := Task{
+		ID:       taskList.NextID,
+		Title:    title,
+		Status:   "todo",
+		Priority: priority,
+	}
+	taskList.Tasks = append(taskList.Tasks, newTask)
+	taskList.NextID++
+	fmt.Printf("Task '%s' added with ID %d.\n", title, newTask.ID)
+}
+
+func updateTaskStatus(scanner *bufio.Scanner) {
+	fmt.Print("Enter task ID to update: ")
+	scanner.Scan()
+	idStr := strings.TrimSpace(scanner.Text())
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		fmt.Println("Error: Invalid task ID.")
+		return
+	}
+
 	for i, task := range taskList.Tasks {
 		if task.ID == id {
-			// If task is found, ask for the new status
 			fmt.Print("Enter new status (todo, in-progress, done): ")
 			scanner.Scan()
-			status := strings.TrimSpace(scanner.Text()) // Read and clean up the status
-
-			// Validate that the status is valid
+			status := strings.TrimSpace(scanner.Text())
 			if !isValidStatus(status) {
 				fmt.Println("Error: Invalid status. Valid statuses are: todo, in-progress, done.")
 				return
 			}
-
-			// Update the task's status
 			taskList.Tasks[i].Status = status
 			fmt.Printf("Task ID %d updated to status '%s'.\n", id, status)
 			return
 		}
 	}
-
-	// If the task ID was not found, notify the user
 	fmt.Println("Error: Task not found.")
 }
 
-// listTasks displays tasks filtered by their status.
 func listTasks(scanner *bufio.Scanner) {
 	fmt.Print("Enter status to filter by (todo, in-progress, done, all): ")
 	scanner.Scan()
-	status := strings.TrimSpace(scanner.Text()) // Read and clean up the status input
-
-	// Validate that the status filter is valid
+	status := strings.TrimSpace(scanner.Text())
 	if status != "todo" && status != "in-progress" && status != "done" && status != "all" {
 		fmt.Println("Error: Invalid status filter.")
 		return
 	}
 
-	// Display tasks that match the filter
 	fmt.Println("\nTasks:")
 	count := 0
 	for _, task := range taskList.Tasks {
-		// Include tasks that match the filter or show all
 		if status == "all" || task.Status == status {
-			fmt.Printf("ID: %d | Title: %s | Status: %s\n", task.ID, task.Title, task.Status)
+			fmt.Printf("ID: %d | Title: %s | Status: %s | Priority: %s\n", task.ID, task.Title, task.Status, task.Priority)
 			count++
 		}
 	}
-
-	// Notify if no tasks are found
 	if count == 0 {
 		fmt.Println("No tasks found.")
 	}
 }
 
-// saveTasksToFile saves the current task list to a JSON file.
+func deleteTask(scanner *bufio.Scanner) {
+	fmt.Print("Enter task ID to delete: ")
+	scanner.Scan()
+	idStr := strings.TrimSpace(scanner.Text())
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		fmt.Println("Error: Invalid task ID.")
+		return
+	}
+
+	for i, task := range taskList.Tasks {
+		if task.ID == id {
+			fmt.Printf("Are you sure you want to delete task '%s'? (yes/no): ", task.Title)
+			scanner.Scan()
+			confirmation := strings.TrimSpace(scanner.Text())
+			if confirmation == "yes" {
+				taskList.Tasks = append(taskList.Tasks[:i], taskList.Tasks[i+1:]...)
+				fmt.Printf("Task ID %d deleted.\n", id)
+				return
+			} else {
+				fmt.Println("Deletion cancelled.")
+				return
+			}
+		}
+	}
+	fmt.Println("Error: Task not found.")
+}
+
+func searchTasks(scanner *bufio.Scanner) {
+	fmt.Print("Enter keyword to search for tasks: ")
+	scanner.Scan()
+	keyword := strings.TrimSpace(scanner.Text())
+
+	fmt.Println("\nSearch Results:")
+	count := 0
+	for _, task := range taskList.Tasks {
+		if strings.Contains(strings.ToLower(task.Title), strings.ToLower(keyword)) {
+			fmt.Printf("ID: %d | Title: %s | Status: %s | Priority: %s\n", task.ID, task.Title, task.Status, task.Priority)
+			count++
+		}
+	}
+	if count == 0 {
+		fmt.Println("No tasks found matching the keyword.")
+	}
+}
+
+func sortTasks(by string) {
+	switch by {
+	case "id":
+		sort.Slice(taskList.Tasks, func(i, j int) bool {
+			return taskList.Tasks[i].ID < taskList.Tasks[j].ID
+		})
+	case "title":
+		sort.Slice(taskList.Tasks, func(i, j int) bool {
+			return taskList.Tasks[i].Title < taskList.Tasks[j].Title
+		})
+	case "status":
+		sort.Slice(taskList.Tasks, func(i, j int) bool {
+			return taskList.Tasks[i].Status < taskList.Tasks[j].Status
+		})
+	case "priority":
+		sort.Slice(taskList.Tasks, func(i, j int) bool {
+			return taskList.Tasks[i].Priority < taskList.Tasks[j].Priority
+		})
+	default:
+		fmt.Println("Error: Invalid sort option.")
+		return
+	}
+	fmt.Println("Tasks sorted successfully.")
+}
+
+func sortTasksMenu(scanner *bufio.Scanner) {
+	fmt.Println("Sort tasks by:")
+	fmt.Println("1. ID")
+	fmt.Println("2. Title")
+	fmt.Println("3. Status")
+	fmt.Println("4. Priority")
+	fmt.Print("Choose an option: ")
+	scanner.Scan()
+	choice := strings.TrimSpace(scanner.Text())
+
+	switch choice {
+	case "1":
+		sortTasks("id")
+	case "2":
+		sortTasks("title")
+	case "3":
+		sortTasks("status")
+	case "4":
+		sortTasks("priority")
+	default:
+		fmt.Println("Invalid choice.")
+	}
+}
+
 func saveTasksToFile(filename string) {
-	file, err := os.Create(filename) // Open the file for writing (truncate if exists)
+	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Println("Error saving tasks:", err)
 		return
 	}
-	defer file.Close() // Ensure the file is closed after writing
+	defer file.Close()
 
-	encoder := json.NewEncoder(file) // Create a JSON encoder
-	err = encoder.Encode(taskList)   // Write the task list to the file
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(taskList)
 	if err != nil {
 		fmt.Println("Error encoding tasks:", err)
 	}
 }
 
-// loadTasksFromFile loads tasks from a JSON file into memory.
 func loadTasksFromFile(filename string) error {
-	file, err := os.Open(filename) // Open the file for reading
+	file, err := os.Open(filename)
 	if os.IsNotExist(err) {
-		// If the file does not exist, initialize an empty task list
 		taskList = TaskList{NextID: 1}
 		return nil
 	} else if err != nil {
-		return err // Return other errors
+		return err
 	}
-	defer file.Close() // Ensure the file is closed after reading
+	defer file.Close()
 
-	decoder := json.NewDecoder(file) // Create a JSON decoder
-	err = decoder.Decode(&taskList)  // Populate the task list from the file
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&taskList)
 	if err != nil {
-		taskList = TaskList{NextID: 1} // Reset the task list if decoding fails
+		taskList = TaskList{NextID: 1}
 		return err
 	}
 	return nil
 }
 
-// isValidStatus checks if the given status is valid.
 func isValidStatus(status string) bool {
 	return status == "todo" || status == "in-progress" || status == "done"
 }
