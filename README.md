@@ -1,6 +1,8 @@
+![github banner](https://github.com/user-attachments/assets/2fb6a32e-b0e7-49bd-a3a9-554affbd3d0d)
+
 ### Enhanced Task Tracker CLI 🚀  
 **A feature-rich command-line tool for managing your tasks efficiently!**  
-With support for priorities, searching, sorting, and much more, this CLI tool helps you organize your tasks like a pro.  
+With support for priorities, searching, sorting, and much more, this CLI tool helps you organize your tasks like a pro. 
 
 ---
 
