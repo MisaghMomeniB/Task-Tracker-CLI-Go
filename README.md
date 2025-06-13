@@ -1,69 +1,75 @@
-![github banner](https://github.com/user-attachments/assets/2fb6a32e-b0e7-49bd-a3a9-554affbd3d0d)
+# ✅ Task Tracker CLI (Go)
 
-### Enhanced Task Tracker CLI 🚀  
-**A feature-rich command-line tool for managing your tasks efficiently!**  
-With support for priorities, searching, sorting, and much more, this CLI tool helps you organize your tasks like a pro. 
+A **lightweight and feature-rich command-line task manager** built in Go. Manage your tasks—create, update, delete, search, sort, and track progress—all from the terminal with ease.
 
 ---
 
-### Features ✨  
-1. **Add Tasks** 📝  
-   Easily create new tasks with a title and priority (`High`, `Medium`, or `Low`).  
-   
-2. **Update Task Status** 🔄  
-   Change task statuses between `todo`, `in-progress`, and `done` effortlessly.  
+## 📋 Table of Contents
 
-3. **List Tasks** 📋  
-   View tasks filtered by status or see them all in one go, with clear details about priority.  
-
-4. **Delete Tasks** 🗑️  
-   Safely remove tasks with confirmation prompts to avoid accidental deletions.  
-
-5. **Search Tasks** 🔍  
-   Quickly locate tasks by keywords in their titles.  
-
-6. **Sort Tasks** ⬆️⬇️  
-   Organize tasks by:
-   - **ID**
-   - **Title**
-   - **Status**
-   - **Priority**  
-
-7. **Persistent Storage** 💾  
-   Save tasks to a file (`tasks.json`) and reload them on startup.  
-
-8. **User-Friendly Menu** 🎯  
-   Intuitive, easy-to-navigate menu for managing tasks.  
+1. [Overview](#overview)  
+2. [Features](#features)  
+3. [Tech Stack & Requirements](#tech-stack--requirements)  
+4. [Installation & Build](#installation--build)  
+5. [Usage Examples](#usage-examples)  
+6. [Code Structure](#code-structure)  
+7. [Future Improvements](#future-improvements)  
+8. [Contributing](#contributing)  
+9. [License](#license)
 
 ---
 
-### Installation 🛠️  
+## 💡 Overview
 
-1. **Clone the repository**:  
-   ```bash
-   git clone https://github.com/your-username/enhanced-task-tracker.git
-   cd enhanced-task-tracker
-   ```
-
-2. **Run the program**:  
-   ```bash
-   go run enhanced_task_tracker.go
-   ```
-
-3. **(Optional)** Compile for standalone use:  
-   ```bash
-   go build -o task-tracker
-   ./task-tracker
-   ```
+This CLI tool allows you to manage tasks efficiently through a text-based menu and JSON-backed persistence. It supports task priorities, status tracking, searching, and sorting—ideal for boosting productivity in your terminal workflow. :contentReference[oaicite:1]{index=1}
 
 ---
 
-### Usage 🧑‍💻  
+## ✅ Features
 
-Upon running the program, you'll see a menu:  
+- 📝 **Add Tasks**: Create tasks with Title and Priority (High, Medium, Low)  
+- 🔁 **Update Status**: Change between `todo`, `in-progress`, and `done`  
+- 📄 **List Tasks**: Filter by status or view all  
+- 🔎 **Search Tasks**: Quick lookup by keyword  
+- 🔄 **Sort Tasks**: By ID, title, status, or priority  
+- 🗑️ **Delete Tasks**: Remove entries with confirmation prompt  
+- 💾 **Persistent Storage**: Saves to `tasks.json` for data continuity  
+- 🧩 **Intuitive CLI Menu**: Navigate options with clear prompts :contentReference[oaicite:2]{index=2}
 
-```text
-Enhanced Task Tracker CLI
+---
+
+## 🛠️ Tech Stack & Requirements
+
+- **Go 1.18+** (module support required)  
+- Standard Go libraries (`encoding/json`, `os`, etc.)  
+- No external dependencies
+
+---
+
+## ⚙️ Installation & Build
+
+Clone and compile the project:
+
+```bash
+git clone https://github.com/MisaghMomeniB/Task-Tracker-CLI-Go.git
+cd Task-Tracker-CLI-Go/src
+go build -o task-tracker
+````
+
+Or run directly:
+
+```bash
+go run main.go
+```
+
+---
+
+## 🚀 Usage Examples
+
+### Start the Task Manager
+
+```
+$ ./task-tracker
+Task Tracker CLI
 1. Add Task
 2. Update Task Status
 3. List Tasks
@@ -74,67 +80,77 @@ Enhanced Task Tracker CLI
 Choose an option:
 ```
 
-Simply select an option and follow the prompts to manage your tasks.  
+### Add a Task
+
+```
+Enter task title: Fix README typos
+Select priority (High/Medium/Low): High
+✅ Task 'Fix README typos' added (ID: 1)
+```
+
+### List All Tasks
+
+```
+Status? (todo/in-progress/done/all): all
+ID:1 | Title: Fix README typos | Status: todo | Priority: High
+```
+
+### Update Task
+
+```
+Enter task ID: 1
+Select new status (todo/in-progress/done): in-progress
+🔄 Task ID 1 status updated to in-progress
+```
+
+### Search & Sort Tasks
+
+Supports keyword search:
+
+```
+Enter keyword: README
+```
+
+Supports sorting by ID, Title, Status, Priority.
 
 ---
 
-### Examples 🌟  
+## 📁 Code Structure
 
-#### Adding a Task  
-```text
-Enter task title: Learn Go
-Enter priority (High, Medium, Low): High
-Task 'Learn Go' added with ID 1.
+```
+Task-Tracker-CLI-Go/
+├── src/
+│   ├── main.go          # CLI menu & command handling
+│   └── task.go          # Task struct + JSON (de)serialization
+└── README.md            # This file
 ```
 
-#### Listing All Tasks  
-```text
-Enter status to filter by (todo, in-progress, done, all): all
-
-Tasks:
-ID: 1 | Title: Learn Go | Status: todo | Priority: High
-```
-
-#### Updating a Task's Status  
-```text
-Enter task ID to update: 1
-Enter new status (todo, in-progress, done): in-progress
-Task ID 1 updated to status 'in-progress'.
-```
-
-#### Searching Tasks  
-```text
-Enter keyword to search for tasks: learn
-
-Search Results:
-ID: 1 | Title: Learn Go | Status: in-progress | Priority: High
-```
-
-#### Sorting Tasks  
-```text
-Sort tasks by:
-1. ID
-2. Title
-3. Status
-4. Priority
-Choose an option: 4
-Tasks sorted successfully.
-```
+* **main.go**: menu navigation, user prompts, action logic
+* **task.go**: defines Task model and JSON load/save functions
 
 ---
 
-### Contributing 🤝  
+## 🔧 Future Improvements
 
-Want to improve the Enhanced Task Tracker? Contributions are welcome!  
-
-1. Fork the repository.  
-2. Create a feature branch.  
-3. Commit your changes.  
-4. Submit a pull request.  
+* Add **due dates** and **reminders**
+* Include **project labels** or tags
+* Support **batch import/export**
+* Implement **CLI flags** vs interactive mode
+* Add **automated tests** and performance benchmarks
 
 ---
 
-### License 📜  
-This project is licensed under the MIT License.  
+## 🤝 Contributing
 
-Enjoy productive task tracking! 🎉
+Contributions are welcome! To improve:
+
+1. Fork the repo
+2. Create a branch (`feature/...`)
+3. Code enhancements with proper comments
+4. Submit a detailed Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see `LICENSE` for details.
